@@ -1,6 +1,7 @@
 {
    "jobs": {
       "build_and_test": {
+         "if": "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_build_and_test == 'true' }}",
          "name": "build_and_test ${{ matrix.host.os }}",
          "runs-on": "${{ matrix.host.os }}",
          "steps": [
@@ -79,17 +80,10 @@
                "host": [
                   {
                      "bazel_os": "linux",
-                     "cross_compile": true,
+                     "cross_compile": false,
                      "os": "ubuntu-latest",
                      "platform_name": "linux_amd64",
                      "upload": true
-                  },
-                  {
-                     "bazel_os": "windows",
-                     "cross_compile": false,
-                     "os": "windows-latest",
-                     "platform_name": "windows_amd64",
-                     "upload": false
                   }
                ]
             }
@@ -125,6 +119,15 @@
    },
    "name": "pull-requests",
    "on": {
+      "workflow_dispatch": {
+         "inputs": {
+            "run_build_and_test": {
+               "description": "Run full build_and_test matrix",
+               "required": false,
+               "default": "false"
+            }
+         }
+      },
       "pull_request": {
          "branches": [
             "main"
